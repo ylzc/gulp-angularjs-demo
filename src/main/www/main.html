@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>gulp</title>
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body ng-controller="appCtrl">
+    <div class="head">
+        <a ui-sref="main">main</a>
+        <a ui-sref="test">test</a>
+    </div>
+    <div class="main" ui-view=""></div>
+</body>
+<script src="plugin/requirejs/require.js"></script>
+<script src="script/requireMain.js"></script>
+</html>
