@@ -10,6 +10,8 @@ var clean = require('gulp-clean');
 var gutil = require("gulp-util");
 var concat = require('gulp-concat');
 var sourcemaps = require('gulp-sourcemaps');
+var changed = require("gulp-changed");
+var debug = require('gulp-debug');
 
 var src = "src/main/www/";
 var output = "src/main/resources/static/";
@@ -41,6 +43,7 @@ gulp.task('default', ['sass']);
 
 gulp.task('sass', function (done) {
     gulp.src(paths.sass)
+        .pipe(changed(paths.output+'css/'))
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(paths.output+'css/'))
@@ -65,18 +68,28 @@ gulp.task('watch', ['sass', "syncLib","syncJS","syncTP","syncIMG"], function () 
 
 
 gulp.task('syncIMG', function (done) {
+    function printSummary( result ) {
+        gutil.log('img: '
+            + result.created + ' files created, '
+            + result.updated + ' files updated, '
+            + result.removed + ' items deleted, '
+            + result.same + ' files unchanged'
+        );
+    }
     return gulp.src("")
-        .pipe(dirSync(paths.src+"images", paths.output+"images", {printSummary: true, nodelete: false}))
+        .pipe(dirSync(paths.src+"images", paths.output+"images", {printSummary: printSummary, nodelete: false}))
 });
 
 gulp.task("syncJS", function (done) {
     gulp.src(paths.js)
+        .pipe(changed(paths.output))
         .pipe(sourcemaps.init())
         .pipe(babel())
         .on('error', errConsole)
         .pipe(uglify())
         .on('error', errConsole)
         .pipe(sourcemaps.write("./"))
+        .pipe(debug({title: 'js:'}))
         .pipe(gulp.dest(paths.output))
         .on('end',done)
 
@@ -94,14 +107,25 @@ gulp.task("syncTP", function (done) {
         minifyCSS: false//压缩页面CSS
     };
     gulp.src(paths.html)
+        .pipe(changed(paths.output))
         .pipe(htmlmin(options))
+        .pipe(debug({title: 'html:'}))
         .pipe(gulp.dest(paths.output))
         .on('end',done)
 });
 
 gulp.task("syncLib", function (done) {
+
+    function printSummary( result ) {
+        gutil.log('lib: '
+            + result.created + ' files created, '
+            + result.updated + ' files updated, '
+            + result.removed + ' items deleted, '
+            + result.same + ' files unchanged'
+        );
+    }
     gulp.src("")
-        .pipe(dirSync(paths.src+"plugin", paths.output+"plugin", {printSummary: true, nodelete: false}))
+        .pipe(dirSync(paths.src+"plugin", paths.output+"plugin", {printSummary: printSummary, nodelete: false}))
         .on('end',done)
 });
 
@@ -131,7 +155,7 @@ gulp.task("cleanJs", function () {
         .pipe(clean());
 })
 
-gulp.task("jsmin", ['cleanJs'], function () {
+gulp.task("jsmin", ['cleanJs'], function (done) {
     gulp.src(paths.js)
         .pipe(babel())
         .on('error', errConsole)
@@ -140,6 +164,7 @@ gulp.task("jsmin", ['cleanJs'], function () {
         .pipe(uglify())
         .on('error', errConsole)
         .pipe(gulp.dest(paths.output+"script"))
+        .on('end',done)
 })
 
 function errConsole(err) {
