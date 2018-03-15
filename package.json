@@ -2,7 +2,6 @@
   "name": "gulpdemo",
   "version": "1.0.0",
   "description": "gulp demo with spring-boot",
-  "main": "index.js",
   "scripts": {
     "watch": "gulp watch"
   },

@@ -44,12 +44,14 @@ gulp.task('sass', function (done) {
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest(paths.output+'css/'))
+        .pipe(gulp.dest(paths.src+'css/'))
         .pipe(cleanCss({
             keepSpecialComments: 0
         }))
         .pipe(rename({extname: '.min.css'}))
         .pipe(sourcemaps.write("./"))
         .pipe(gulp.dest(paths.output+'css/'))
+        .pipe(gulp.dest(paths.src+'css/'))
         .on('end',done)
 });
 
